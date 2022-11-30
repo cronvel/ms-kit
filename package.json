@@ -1,0 +1,37 @@
+{
+  "name": "ms-kit",
+  "version": "0.0.0",
+  "description": "PowerShell and various Windows utilities useful for Node.js/Electron.",
+  "main": "lib/ms.js",
+  "engines": {
+    "node": ">=16.13.0"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "tea-time -R dot"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cronvel/ms-kit.git"
+  },
+  "keywords": [
+    "filesystem"
+  ],
+  "author": "Cédric Ronvel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cronvel/ms-kit/issues"
+  },
+  "copyright": {
+    "title": "MS Kit",
+    "years": [
+      2022
+    ],
+    "owner": "Cédric Ronvel"
+  }
+}
