@@ -6,4 +6,4 @@ Param(
 
 $shell = New-Object -ComObject WScript.Shell
 $shortcut = $shell.CreateShortcut($path) 
-$shortcut
+$shortcut | ConvertTo-Json
