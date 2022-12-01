@@ -1,0 +1,1 @@
+Get-AppxPackage | ConvertTo-Json

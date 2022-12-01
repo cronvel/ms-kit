@@ -1,7 +1,3 @@
-#requires -version 5.1
-
-# inspired by https://community.spiceworks.com/topic/592770-extract-icon-from-exe-powershell
-
 [CmdletBinding(SupportsShouldProcess)]
 Param(
     [Parameter(Position = 0, Mandatory,HelpMessage = "Specify the path to the file.")]
@@ -65,22 +61,15 @@ Switch ($format) {
 	"gif" {$imageFormat = "Gif"}
 }
 
-Write-Verbose "Processing $($file.fullname)"
-
-Write-Verbose "Extracting $imageFormat image to $destination"
 $ico = [System.IconExtractor]::Extract($path, $imageIndex, $size)
 
 if ($ico) {
-	#WhatIf (target, action)
 	if ($PSCmdlet.ShouldProcess($destination, "Extract icon")) {
 		$ico.ToBitmap().Save($destination,$imageFormat)
-		#Get-Item -path $destination
 	}
 }
 else {
-	#this should probably never get called
 	Write-Warning "No associated icon image found in $path"
 }
 
-Write-Verbose "Ending $($MyInvocation.MyCommand)"
 
