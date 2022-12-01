@@ -10,6 +10,7 @@
     "test": "test"
   },
   "dependencies": {
+    "fs-kit": "^0.6.4",
     "seventh": "^0.8.1"
   },
   "scripts": {
