@@ -1,1 +1,1 @@
-Get-AppxPackage | ConvertTo-Json
+Get-AppxPackage -PackageTypeFilter Bundle | ConvertTo-Json
