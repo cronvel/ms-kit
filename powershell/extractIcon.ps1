@@ -6,19 +6,20 @@
 Param(
     [Parameter(Position = 0, Mandatory,HelpMessage = "Specify the path to the file.")]
     [ValidateScript({Test-Path $_})]
-    [string]$Path,
+    [string]$path,
 
-    [Parameter(HelpMessage = "Specify the folder to save the file.")]
-    [ValidateScript({Test-Path $_})]
-    [string]$Destination = ".",
+    [Parameter(Position = 1, Mandatory,HelpMessage = "Specify the destination file to save the image.")]
+    [string]$destination,
 
-    [parameter(HelpMessage = "Specify an alternate base name for the new image file. Otherwise, the source name will be used.")]
-    [ValidateNotNullOrEmpty()]
-    [string]$Name,
+    [Parameter(Position = 2, Mandatory,HelpMessage = "What is the image index in the file?")]
+    [int]$imageIndex,
 
-    [Parameter(HelpMessage = "What format do you want to use? The default is png.")]
+    [Parameter(Position = 3, Mandatory,HelpMessage = "What size do you want to use?")]
+    [int]$size,
+
+    [Parameter(Position = 4, Mandatory,HelpMessage = "What format do you want to use?")]
     [ValidateSet("ico","bmp","png","jpg","gif")]
-    [string]$Format = "png"
+    [string]$format
 )
 
 $code = @"
@@ -26,35 +27,27 @@ using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 
-namespace System
-{
-	public class IconExtractor
-	{
-
-	 public static Icon Extract(string file, int number, int size)
-	 {
-	  IntPtr icon;
-	  IntPtr trashIcon;
-	  if ( SHDefExtractIcon(file, number, 0, out icon, out trashIcon, size) >= 0 ) {
-		return Icon.FromHandle( icon );
-	  }
-	  else {
-		return null;
-	  }
-
-	
-
-	 }
-	 [DllImport("Shell32.dll", EntryPoint = "SHDefExtractIconW", CharSet = CharSet.Unicode, ExactSpelling = true, CallingConvention = CallingConvention.StdCall)]
-	 private static extern int SHDefExtractIcon(string sFile, int iIndex, int uFlags, out IntPtr piLargeVersion, out IntPtr piSmallVersion, int size);
-
+namespace System {
+	public class IconExtractor {
+		public static Icon Extract(string file, int number, int size) {
+			IntPtr icon;
+			IntPtr trashIcon;
+			
+			if ( SHDefExtractIcon(file, number, 0, out icon, out trashIcon, size) >= 0 ) {
+				return Icon.FromHandle( icon );
+			}
+			else {
+				return null;
+			}
+		}
+		
+		[DllImport("Shell32.dll", EntryPoint = "SHDefExtractIconW", CharSet = CharSet.Unicode, ExactSpelling = true, CallingConvention = CallingConvention.StdCall)]
+		private static extern int SHDefExtractIcon(string sFile, int iIndex, int uFlags, out IntPtr piLargeVersion, out IntPtr piSmallVersion, int size);
 	}
 }
 "@
 
 Add-Type -TypeDefinition $code -ReferencedAssemblies System.Drawing
-
-Write-Verbose "Starting $($MyInvocation.MyCommand)"
 
 Try {
 	Add-Type -AssemblyName System.Drawing -ErrorAction Stop
@@ -65,49 +58,29 @@ Catch {
 }
 
 Switch ($format) {
-	"ico" {$ImageFormat = "icon"}
-	"bmp" {$ImageFormat = "Bmp"}
-	"png" {$ImageFormat = "Png"}
-	"jpg" {$ImageFormat = "Jpeg"}
-	"gif" {$ImageFormat = "Gif"}
+	"ico" {$imageFormat = "icon"}
+	"bmp" {$imageFormat = "Bmp"}
+	"png" {$imageFormat = "Png"}
+	"jpg" {$imageFormat = "Jpeg"}
+	"gif" {$imageFormat = "Gif"}
 }
 
-$file = Get-Item $path
 Write-Verbose "Processing $($file.fullname)"
-#convert destination to file system path
-$Destination = Convert-Path -path $Destination
 
-if ($Name) {
-	$base = $Name
-}
-else {
-	$base = $file.BaseName
-}
-
-#construct the image file name
-$out = Join-Path -Path $Destination -ChildPath "$base.$format"
-
-Write-Verbose "Extracting $ImageFormat image to $out"
-#$ico = [System.IconExtractor]::Extract("C:\Users\cedric\code\powershell\cal.lnk", 0, 0)
-$ico = [System.IconExtractor]::Extract("C:\Users\cedric\code\powershell\firefox.exe", 0, 256)
-#$ico = [System.IconExtractor]::Extract("shell32.dll", 12, 0)
-#$ico = [System.IconExtractor2]::Extract($file.FullName, 1)
-#$ico =  [System.Drawing.Icon]::ExtractAssociatedIcon($file.FullName)
-
-#$form = New-Object System.Windows.Forms.Form
-#$form.Icon = [System.IconExtractor]::Extract("shell32.dll", 42, $true)
-#$form.ShowDialog()
+Write-Verbose "Extracting $imageFormat image to $destination"
+$ico = [System.IconExtractor]::Extract($path, $imageIndex, $size)
 
 if ($ico) {
 	#WhatIf (target, action)
-	if ($PSCmdlet.ShouldProcess($out, "Extract icon")) {
-		$ico.ToBitmap().Save($Out,$Imageformat)
-		Get-Item -path $out
+	if ($PSCmdlet.ShouldProcess($destination, "Extract icon")) {
+		$ico.ToBitmap().Save($destination,$imageFormat)
+		#Get-Item -path $destination
 	}
 }
 else {
 	#this should probably never get called
-	Write-Warning "No associated icon image found in $($file.fullname)"
+	Write-Warning "No associated icon image found in $path"
 }
 
 Write-Verbose "Ending $($MyInvocation.MyCommand)"
+
