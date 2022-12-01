@@ -5,7 +5,8 @@
 const msKit = require( '..' ) ;
 
 async function run() {
-	msKit.powershell.readShortcutLink( '../../powershell/firefox.exe.lnk' ) ;
+	var result = await msKit.powershell.readShortcutLink( process.argv[ 2 ] ) ;
+	console.log( "Link:" , result ) ;
 }
 
 run() ;
