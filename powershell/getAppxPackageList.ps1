@@ -22,7 +22,7 @@ $rawList | ForEach-Object {
 		$element.remove("ResourceId");
 
 		# Add properties from the manifest
-		$element.IconPath = $element.InstallLocation + '\' + $manifest.package.properties.logo;
+		$element.IconPath = Join-Path -Path $element.InstallLocation -ChildPath $manifest.package.properties.logo;
 
 		$list += $element;
 	}
