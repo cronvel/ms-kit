@@ -5,7 +5,9 @@
 const msKit = require( '..' ) ;
 
 async function run() {
-	var result = await msKit.getStartMenuShortcutLinks() ;
+	var result = await msKit.getStartMenuShortcutLinks( {
+		extractIconDir: process.argv[ 2 ] || null
+	} ) ;
 	console.log( "Links:" , result ) ;
 }
 
