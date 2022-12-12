@@ -5,7 +5,9 @@
 const msKit = require( '..' ) ;
 
 async function run() {
-	var result = await msKit.powershell.readShortcutLink( process.argv[ 2 ] ) ;
+	var result = await msKit.powershell.readShortcutLink(
+		process.argv.length > 3 ? process.argv.slice( 2 ) : process.argv[ 2 ]
+	) ;
 	console.log( "Link:" , result ) ;
 }
 
