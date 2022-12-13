@@ -1,5 +1,5 @@
 Param(
-    [Parameter(Position=0,Mandatory,HelpMessage = "Specify the path to the file.")]
+    [Parameter(Mandatory=$true,ValueFromRemainingArguments=$true,HelpMessage = "Specify the path to the file.")]
     [ValidateScript({Test-Path $_})]
     [string[]]$pathList=@()
 )
