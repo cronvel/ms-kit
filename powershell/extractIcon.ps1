@@ -18,6 +18,11 @@ Param(
     [string]$format
 )
 
+echo "imageIndex:" $imageIndex
+echo "size:" $size
+echo "format:" $format
+
+
 $code = @"
 using System;
 using System.Drawing;
