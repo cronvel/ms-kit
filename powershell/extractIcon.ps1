@@ -1,26 +1,29 @@
 [CmdletBinding(SupportsShouldProcess)]
 Param(
-    [Parameter(Position = 0, Mandatory,HelpMessage = "Specify the path to the file.")]
+    [Parameter(Position = 0 , HelpMessage = "Specify the path to the file.")]
     [ValidateScript({Test-Path $_})]
-    [string]$path,
+    [string]$Path,
 
-    [Parameter(Position = 1, Mandatory,HelpMessage = "Specify the destination file to save the image.")]
-    [string]$destination,
+    [Parameter(Position = 1 , HelpMessage = "Specify the destination file to save the image.")]
+    [string]$Destination,
 
-    [Parameter(Position = 2, Mandatory,HelpMessage = "What is the image index in the file?")]
-    [int]$imageIndex,
+    [Parameter(Position = 2 , HelpMessage = "What is the image index in the file?")]
+    [int]$ImageIndex,
 
-    [Parameter(Position = 3, Mandatory,HelpMessage = "What size do you want to use?")]
-    [int]$size,
+    [Parameter(Position = 3 , HelpMessage = "What size do you want to use?")]
+    [int]$Size,
 
-    [Parameter(Position = 4, Mandatory,HelpMessage = "What format do you want to use?")]
+    [Parameter(Position =4 , HelpMessage = "What image format do you want for output?")]
     [ValidateSet("ico","bmp","png","jpg","gif")]
-    [string]$format
+    [string]$Format,
+
+    [Parameter(HelpMessage = "Use standard input to get a list of icon extraction?")]
+    [bool]$Stdin
 )
 
-echo "imageIndex:" $imageIndex
-echo "size:" $size
-echo "format:" $format
+echo "imageIndex:" $ImageIndex
+echo "size:" $Size
+echo "format:" $Format
 
 
 $code = @"
@@ -58,7 +61,7 @@ Catch {
 	Throw $_
 }
 
-Switch ($format) {
+Switch ($Format) {
 	"ico" {$imageFormat = "icon"}
 	"bmp" {$imageFormat = "Bmp"}
 	"png" {$imageFormat = "Png"}
@@ -66,15 +69,15 @@ Switch ($format) {
 	"gif" {$imageFormat = "Gif"}
 }
 
-$ico = [System.IconExtractor]::Extract($path, $imageIndex, $size)
+$ico = [System.IconExtractor]::Extract($Path, $ImageIndex, $Size)
 
 if ($ico) {
-	if ($PSCmdlet.ShouldProcess($destination, "Extract icon")) {
-		$ico.ToBitmap().Save($destination,$imageFormat)
+	if ($PSCmdlet.ShouldProcess($Destination, "Extract icon")) {
+		$ico.ToBitmap().Save($Destination,$imageFormat)
 	}
 }
 else {
-	Write-Warning "No associated icon image found in $path"
+	Write-Warning "No associated icon image found in $Path"
 }
 
 

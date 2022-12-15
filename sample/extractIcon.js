@@ -9,7 +9,8 @@ async function run() {
 		process.argv[ 2 ] ,
 		process.argv[ 3 ] ,
 		{
-			size: process.argv[ 4 ]
+			imageIndex: process.argv[ 4 ] ,
+			size: process.argv[ 5 ]
 		}
 	) ;
 	//console.log( "Link:" , result ) ;
