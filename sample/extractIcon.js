@@ -9,7 +9,7 @@ async function run() {
 		process.argv[ 2 ] ,
 		process.argv[ 3 ] ,
 		{
-			imageIndex: process.argv[ 4 ] ,
+			index: process.argv[ 4 ] ,
 			size: process.argv[ 5 ]
 		}
 	) ;
