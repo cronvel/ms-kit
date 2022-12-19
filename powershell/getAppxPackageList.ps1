@@ -1,8 +1,6 @@
 
-$exit = 0
-
 Get-AppxPackage | Where-Object {
-	! $_.IsFramework -and ! $_.IsResourcePackage -and ! $_.PackageFullName.Contains( "_neutral_" )
+	! $_.IsFramework -and ! $_.IsResourcePackage -and ! $_.PackageFullName.Contains( "_neutral_" ) 
 } | ForEach-Object {
 	$manifest = Get-AppxPackageManifest $_
 	
@@ -10,7 +8,7 @@ Get-AppxPackage | Where-Object {
 	
 	$application = $application | Where-Object { $_.Id -eq "App" }
 	
-	if ( ! $exit -and $application ) {
+	if ( $application ) {
 		@{
 			appName = $_.Name
 			packageFullName = $_.PackageFullName
@@ -21,8 +19,6 @@ Get-AppxPackage | Where-Object {
 			executable = Join-Path -Path $_.InstallLocation -ChildPath $application.Executable
 			entryPoint = $application.EntryPoint
 		}
-		#$exit = 1
 	}
 } | ConvertTo-Json
-
 

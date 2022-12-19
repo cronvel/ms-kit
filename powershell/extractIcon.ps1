@@ -93,23 +93,33 @@ function Extract-Icon {
 		if ( $icon ) {
 			$icon.ToBitmap().Save( $Destination , $imageFormat )
 			@{
-				source = $Source ,
+				source = $Source
 				destination = $Destination
+				index = $Index
+				size = $Size
+				format = $Format
 			}
 		}
 		else {
 			Write-Warning "No associated icon image found in $Source"
 			@{
-				source = $Source ,
-				destination = null
+				source = $Source
+				destination = $Destination
+				index = $Index
+				size = $Size
+				format = $Format
+				error = "No associated icon image found"
 			}
 		}
 	}
 	catch {
-		Write-Warning "Extract failed for $Source"
 		@{
-			source = $Source ,
-			destination = null
+			source = $Source
+			destination = $Destination
+			index = $Index
+			size = $Size
+			format = $Format
+			error = "Extract failed"
 		}
 	}
 }
@@ -118,25 +128,12 @@ if ( $Stdin ) {
 	$input | ConvertFrom-Json | Foreach-Object {
 		# This is ONE input, each input being a JSON
 		$_ | Foreach-Object {
-			#echo "object:" $_
-			echo "Source:" $_.source
-			echo "Destination:" $_.destination
-			echo "Index:" $_.index
-			echo "Size:" $_.size
-			echo "Format:" $_.format
-
 			Extract-Icon -Source $_.source -Destination $_.destination -Index $_.index -Size $_.size -Format $_.format
 		}
-	}
+	} | ConvertTo-Json
 }
 else {
-	echo "Source:" $Source
-	echo "Destination:" $Destination
-	echo "Index:" $Index
-	echo "Size:" $Size
-	echo "Format:" $Format
-	
-	Extract-Icon -Source $Source -Destination $Destination -Index $Index -Size $Size -Format $Format
+	Extract-Icon -Source $Source -Destination $Destination -Index $Index -Size $Size -Format $Format | ConvertTo-Json
 }
 
 
