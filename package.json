@@ -21,7 +21,9 @@
     "url": "https://github.com/cronvel/ms-kit.git"
   },
   "keywords": [
-    "filesystem"
+    "microsoft",
+    "windows",
+    "powershell"
   ],
   "author": "Cédric Ronvel",
   "license": "MIT",
