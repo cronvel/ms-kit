@@ -27,7 +27,7 @@
 /* global describe, it, before, after */
 
 
-const fsKit = require( '..' ) ;
+const msKit = require( '..' ) ;
 
 
 
