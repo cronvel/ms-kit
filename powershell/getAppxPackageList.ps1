@@ -12,14 +12,14 @@ Get-AppxPackage | Where-Object {
 	
 	if ( ! $exit -and $application ) {
 		@{
-			Name = $_.Name
-			PackageFullName = $_.PackageFullName
-			PackageFamilyName = $_.PackageFamilyName
-			InstallLocation = $_.InstallLocation
-			Version = $_.Version
-			IconPath = Join-Path -Path $_.InstallLocation -ChildPath $manifest.package.properties.logo
-			Executable = Join-Path -Path $_.InstallLocation -ChildPath $application.Executable
-			EntryPoint = $application.EntryPoint
+			appName = $_.Name
+			packageFullName = $_.PackageFullName
+			packageFamilyName = $_.PackageFamilyName
+			installLocation = $_.InstallLocation
+			version = $_.Version
+			iconPath = Join-Path -Path $_.InstallLocation -ChildPath $manifest.package.properties.logo
+			executable = Join-Path -Path $_.InstallLocation -ChildPath $application.Executable
+			entryPoint = $application.EntryPoint
 		}
 		#$exit = 1
 	}

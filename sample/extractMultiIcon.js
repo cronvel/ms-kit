@@ -25,7 +25,7 @@ var list = [
 
 async function run() {
 	var result = await msKit.powershell.extractMultiIcon( list ) ;
-	//console.log( "Link:" , result ) ;
+	console.log( "Result:" , result ) ;
 }
 
 run() ;

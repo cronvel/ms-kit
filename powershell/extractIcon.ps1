@@ -87,15 +87,30 @@ function Extract-Icon {
 		"gif" {$imageFormat = "Gif"}
 	}
 
-	$ico = [System.IconExtractor]::Extract($Source, $Index, $Size)
+	try {
+		$icon = [System.IconExtractor]::Extract($Source, $Index, $Size)
 
-	if ($ico) {
-		if ($PSCmdlet.ShouldProcess($Destination, "Extract icon")) {
-			$ico.ToBitmap().Save($Destination,$imageFormat)
+		if ( $icon ) {
+			$icon.ToBitmap().Save( $Destination , $imageFormat )
+			@{
+				source = $Source ,
+				destination = $Destination
+			}
+		}
+		else {
+			Write-Warning "No associated icon image found in $Source"
+			@{
+				source = $Source ,
+				destination = null
+			}
 		}
 	}
-	else {
-		Write-Warning "No associated icon image found in $Source"
+	catch {
+		Write-Warning "Extract failed for $Source"
+		@{
+			source = $Source ,
+			destination = null
+		}
 	}
 }
 
