@@ -5,7 +5,7 @@
 const msKit = require( '..' ) ;
 
 async function run() {
-	var result = await msKit.getStartMenuShortcutLinks( {
+	var result = await msKit.powershell.getStartMenuShortcutLinkList( {
 		extractIconDir: process.argv[ 2 ] || null ,
 		appOnly: true
 	} ) ;
