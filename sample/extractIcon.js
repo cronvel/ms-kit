@@ -6,9 +6,9 @@ const msKit = require( '..' ) ;
 
 async function run() {
 	var result = await msKit.powershell.extractIcon(
-		process.argv[ 2 ] ,
-		process.argv[ 3 ] ,
 		{
+			source: process.argv[ 2 ] ,
+			destination: process.argv[ 3 ] ,
 			index: process.argv[ 4 ] ,
 			size: process.argv[ 5 ]
 		}
