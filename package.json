@@ -1,6 +1,6 @@
 {
   "name": "@cronvel/ms-kit",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "PowerShell and various Windows utilities useful for Node.js/Electron.",
   "main": "lib/ms.js",
   "engines": {
