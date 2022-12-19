@@ -13,7 +13,7 @@ async function run() {
 			size: process.argv[ 5 ]
 		}
 	) ;
-	//console.log( "Link:" , result ) ;
+	console.log( "Result:" , result ) ;
 }
 
 run() ;
