@@ -1,8 +1,8 @@
 [CmdletBinding(SupportsShouldProcess)]
 Param(
-    [Parameter(Position = 0 , HelpMessage = "Specify the path to the file.")]
+    [Parameter(Position = 0 , HelpMessage = "Specify the source file.")]
     [ValidateScript({Test-Path $_})]
-    [string]$Path,
+    [string]$Source,
 
     [Parameter(Position = 1 , HelpMessage = "Specify the destination file to save the image.")]
     [string]$Destination,
@@ -17,7 +17,9 @@ Param(
     [ValidateSet("ico","bmp","png","jpg","gif")]
     [string]$Format,
 
-    [Switch]$Stdin
+    [Switch]$Stdin,
+
+	[Parameter(ValueFromPipeline)]$input
 )
 
 
@@ -59,9 +61,9 @@ Catch {
 
 function Extract-Icon {
 	Param(
-		[Parameter(Position = 0 , HelpMessage = "Specify the path to the file.")]
+		[Parameter(Position = 0 , HelpMessage = "Specify the source file.")]
 		[ValidateScript({Test-Path $_})]
-		[string]$Path,
+		[string]$Source,
 
 		[Parameter(Position = 1 , HelpMessage = "Specify the destination file to save the image.")]
 		[string]$Destination,
@@ -85,7 +87,7 @@ function Extract-Icon {
 		"gif" {$imageFormat = "Gif"}
 	}
 
-	$ico = [System.IconExtractor]::Extract($Path, $Index, $Size)
+	$ico = [System.IconExtractor]::Extract($Source, $Index, $Size)
 
 	if ($ico) {
 		if ($PSCmdlet.ShouldProcess($Destination, "Extract icon")) {
@@ -93,27 +95,33 @@ function Extract-Icon {
 		}
 	}
 	else {
-		Write-Warning "No associated icon image found in $Path"
+		Write-Warning "No associated icon image found in $Source"
 	}
 }
 
 if ( $Stdin ) {
 	$input | ConvertFrom-Json | Foreach-Object {
-		echo "Path:" $Path
-		echo "Destination:" $Destination
-		echo "Index:" $Index
-		echo "Size:" $Size
-		echo "Format:" $Format
+		# This is ONE input, each input being a JSON
+		$_ | Foreach-Object {
+			#echo "object:" $_
+			echo "Source:" $_.source
+			echo "Destination:" $_.destination
+			echo "Index:" $_.index
+			echo "Size:" $_.size
+			echo "Format:" $_.format
+
+			Extract-Icon -Source $_.source -Destination $_.destination -Index $_.index -Size $_.size -Format $_.format
+		}
 	}
 }
 else {
-	echo "Path:" $Path
+	echo "Source:" $Source
 	echo "Destination:" $Destination
 	echo "Index:" $Index
 	echo "Size:" $Size
 	echo "Format:" $Format
 	
-	Extract-Icon -Path $Path -Destination $Destination -Index $Index -Size $Size -Format $Format
+	Extract-Icon -Source $Source -Destination $Destination -Index $Index -Size $Size -Format $Format
 }
 
 
