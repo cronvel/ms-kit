@@ -3,6 +3,9 @@
   "version": "0.2.4",
   "description": "PowerShell and various Windows utilities useful for Node.js/Electron.",
   "main": "lib/ms.js",
+  "_os_": [
+    "win32"
+  ],
   "engines": {
     "node": ">=16.13.0"
   },
