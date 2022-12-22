@@ -1,11 +1,8 @@
 {
   "name": "@cronvel/ms-kit",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "PowerShell and various Windows utilities useful for Node.js/Electron.",
   "main": "lib/ms.js",
-  "os": [
-    "win32"
-  ],
   "engines": {
     "node": ">=16.13.0"
   },
@@ -14,7 +11,8 @@
   },
   "dependencies": {
     "fs-kit": "^0.6.4",
-    "seventh": "^0.8.1"
+    "seventh": "^0.8.1",
+    "string-kit": "^0.17.6"
   },
   "scripts": {
     "test": "tea-time -R dot"
