@@ -18,6 +18,7 @@ Get-AppxPackage | Where-Object {
 			iconPath = Join-Path -Path $_.InstallLocation -ChildPath $manifest.package.properties.logo
 			executable = Join-Path -Path $_.InstallLocation -ChildPath $application.Executable
 			entryPoint = $application.EntryPoint
+			displayName = $manifest.Package.Properties.DisplayName
 		}
 	}
 } | ConvertTo-Json
