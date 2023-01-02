@@ -13,9 +13,11 @@ Param(
     [Parameter(Position = 3 , HelpMessage = "What size do you want to use?")]
     [int]$Size,
 
-    [Parameter(Position =4 , HelpMessage = "What image format do you want for output?")]
+    [Parameter(Position = 4 , HelpMessage = "What image format do you want for output?")]
     [ValidateSet("ico","bmp","png","jpg","gif")]
     [string]$Format,
+
+    [Switch]$Associated,
 
     [Switch]$Stdin,
 
@@ -59,6 +61,8 @@ Catch {
 	Throw $_
 }
 
+
+
 function Extract-Icon {
 	Param(
 		[Parameter(Position = 0 , HelpMessage = "Specify the source file.")]
@@ -74,17 +78,17 @@ function Extract-Icon {
 		[Parameter(Position = 3 , HelpMessage = "What size do you want to use?")]
 		[int]$Size,
 
-		[Parameter(Position =4 , HelpMessage = "What image format do you want for output?")]
+		[Parameter(Position = 4 , HelpMessage = "What image format do you want for output?")]
 		[ValidateSet("ico","bmp","png","jpg","gif")]
 		[string]$Format
 	)
 
-	Switch ($Format) {
-		"ico" {$imageFormat = "icon"}
-		"bmp" {$imageFormat = "Bmp"}
-		"png" {$imageFormat = "Png"}
-		"jpg" {$imageFormat = "Jpeg"}
-		"gif" {$imageFormat = "Gif"}
+	Switch ( $Format ) {
+		"ico" { $imageFormat = "icon" }
+		"bmp" { $imageFormat = "Bmp" }
+		"png" { $imageFormat = "Png" }
+		"jpg" { $imageFormat = "Jpeg" }
+		"gif" { $imageFormat = "Gif" }
 	}
 
 	try {
@@ -101,14 +105,14 @@ function Extract-Icon {
 			}
 		}
 		else {
-			Write-Warning "No associated icon image found in $Source"
+			Write-Warning "No icon could be extracted in $Source"
 			@{
 				source = $Source
 				destination = $Destination
 				index = $Index
 				size = $Size
 				format = $Format
-				error = "No associated icon image found"
+				error = "No icon could be extracted"
 			}
 		}
 	}
@@ -119,21 +123,88 @@ function Extract-Icon {
 			index = $Index
 			size = $Size
 			format = $Format
-			error = "Extract failed"
+			error = "Extract icon failed"
 		}
 	}
 }
+
+
+
+function Extract-Associated-Icon {
+	Param(
+		[Parameter(Position = 0 , HelpMessage = "Specify the source file.")]
+		[ValidateScript({Test-Path $_})]
+		[string]$Source,
+
+		[Parameter(Position = 1 , HelpMessage = "Specify the destination file to save the image.")]
+		[string]$Destination,
+
+		[Parameter(Position = 2 , HelpMessage = "What image format do you want for output?")]
+		[ValidateSet("ico","bmp","png","jpg","gif")]
+		[string]$Format
+	)
+
+	Switch ( $Format ) {
+		"ico" { $imageFormat = "icon" }
+		"bmp" { $imageFormat = "Bmp" }
+		"png" { $imageFormat = "Png" }
+		"jpg" { $imageFormat = "Jpeg" }
+		"gif" { $imageFormat = "Gif" }
+	}
+
+	try {
+		$icon = [System.Drawing.Icon]::ExtractAssociatedIcon( $Source )
+
+		if ( $icon ) {
+			$icon.ToBitmap().Save( $Destination , $imageFormat )
+			@{
+				source = $Source
+				destination = $Destination
+				format = $Format
+			}
+		}
+		else {
+			Write-Warning "No associated icon image found in $Source"
+			@{
+				source = $Source
+				destination = $Destination
+				format = $Format
+				error = "No associated icon image found"
+			}
+		}
+	}
+	catch {
+		@{
+			source = $Source
+			destination = $Destination
+			format = $Format
+			error = "Extract associated icon failed"
+		}
+	}
+}
+
+
 
 if ( $Stdin ) {
 	$input | ConvertFrom-Json | Foreach-Object {
 		# This is ONE input, each input being a JSON
 		$_ | Foreach-Object {
-			Extract-Icon -Source $_.source -Destination $_.destination -Index $_.index -Size $_.size -Format $_.format
+			if ( $_.associated ) {
+				Extract-Associated-Icon -Source $_.source -Destination $_.destination -Format $_.format
+			}
+			else {
+				Extract-Icon -Source $_.source -Destination $_.destination -Index $_.index -Size $_.size -Format $_.format
+			}
 		}
 	} | ConvertTo-Json
 }
 else {
-	Extract-Icon -Source $Source -Destination $Destination -Index $Index -Size $Size -Format $Format | ConvertTo-Json
+	if ( $Associated ) {
+		Extract-Associated-Icon -Source $Source -Destination $Destination -Format $Format | ConvertTo-Json
+	}
+	else {
+		Extract-Icon -Source $Source -Destination $Destination -Index $Index -Size $Size -Format $Format | ConvertTo-Json
+	}
 }
 
 
