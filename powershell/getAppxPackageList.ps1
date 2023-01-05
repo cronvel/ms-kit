@@ -18,7 +18,7 @@ Get-AppxPackage | Where-Object {
 			version = $appx.Version
 			iconPath = Join-Path -Path $appx.InstallLocation -ChildPath $manifest.package.properties.logo
 			executable = Join-Path -Path $appx.InstallLocation -ChildPath $application.Executable
-			entryPoint = $application.EntryPoint
+			#entryPoint = $application.EntryPoint	# Seems useless and makes no sense
 			displayName = $manifest.Package.Properties.DisplayName
 		}
 	}
@@ -28,6 +28,12 @@ Get-AppxPackage | Where-Object {
 		$applicationList | ForEach-Object {
 			$application = $_
 			$id = $application.Id
+			
+			$displayName = $manifest.Package.Properties.DisplayName
+			$altName = $application.VisualElements.DisplayName
+			if ( $altName -and $altName -notLike "ms-resource:*" ) {
+				$displayName = $altName
+			}
 
 			if ( $id -and $id -ne "PackageMetadata" -and $id -notLike "Global.*"  -and $id -notLike "*update*" ) {
 				@{
@@ -39,8 +45,8 @@ Get-AppxPackage | Where-Object {
 					version = $appx.Version
 					iconPath = Join-Path -Path $appx.InstallLocation -ChildPath $manifest.package.properties.logo
 					executable = Join-Path -Path $appx.InstallLocation -ChildPath $application.Executable
-					entryPoint = $application.EntryPoint
-					displayName = $manifest.Package.Properties.DisplayName
+					#entryPoint = $application.EntryPoint
+					displayName = $displayName
 				}
 				
 				#$done = $true
