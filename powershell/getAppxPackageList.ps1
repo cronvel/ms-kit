@@ -2,23 +2,49 @@
 Get-AppxPackage | Where-Object {
 	! $_.IsFramework -and ! $_.IsResourcePackage -and ! $_.PackageFullName.Contains( "_neutral_" ) 
 } | ForEach-Object {
-	$manifest = Get-AppxPackageManifest $_
+	$appx = $_
+	$manifest = Get-AppxPackageManifest $appx
 	
-	$application = $manifest.Package.Applications.Application
-	
-	$application = $application | Where-Object { $_.Id -eq "App" }
+	$applicationList = $manifest.Package.Applications.Application
+	$application = $applicationList | Where-Object { $_.Id -eq "App" }
 	
 	if ( $application ) {
 		@{
-			appName = $_.Name
-			packageFullName = $_.PackageFullName
-			packageFamilyName = $_.PackageFamilyName
-			installLocation = $_.InstallLocation
-			version = $_.Version
-			iconPath = Join-Path -Path $_.InstallLocation -ChildPath $manifest.package.properties.logo
-			executable = Join-Path -Path $_.InstallLocation -ChildPath $application.Executable
+			appName = $appx.Name
+			subAppId = $application.Id
+			packageFullName = $appx.PackageFullName
+			packageFamilyName = $appx.PackageFamilyName
+			installLocation = $appx.InstallLocation
+			version = $appx.Version
+			iconPath = Join-Path -Path $appx.InstallLocation -ChildPath $manifest.package.properties.logo
+			executable = Join-Path -Path $appx.InstallLocation -ChildPath $application.Executable
 			entryPoint = $application.EntryPoint
 			displayName = $manifest.Package.Properties.DisplayName
+		}
+	}
+	else {
+		#$done = $false
+
+		$applicationList | ForEach-Object {
+			$application = $_
+			$id = $application.Id
+
+			if ( $id -and $id -ne "PackageMetadata" -and $id -notLike "Global.*"  -and $id -notLike "*update*" ) {
+				@{
+					appName = $appx.Name
+					subAppId = $application.Id
+					packageFullName = $appx.PackageFullName
+					packageFamilyName = $appx.PackageFamilyName
+					installLocation = $appx.InstallLocation
+					version = $appx.Version
+					iconPath = Join-Path -Path $appx.InstallLocation -ChildPath $manifest.package.properties.logo
+					executable = Join-Path -Path $appx.InstallLocation -ChildPath $application.Executable
+					entryPoint = $application.EntryPoint
+					displayName = $manifest.Package.Properties.DisplayName
+				}
+				
+				#$done = $true
+			}
 		}
 	}
 } | ConvertTo-Json
